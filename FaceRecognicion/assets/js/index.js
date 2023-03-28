@@ -1,4 +1,7 @@
 const cam = document.getElementById("cam");
+const music = document.getElementById("myAudio");
+
+music.volume = 0.1;
 
 const startVideo = () => {
   navigator.mediaDevices.enumerateDevices().then((devices) => {
@@ -86,21 +89,17 @@ cam.addEventListener("play", async () => {
     };
 
     setTimeout(() => {
-      showInfo("showTotal", `Total de pessoas: ${totalDetections}`);
-      showInfo(
-        "showTotalAges",
-        `Total das idades: ${totalDetections > 1 ? parseInt(totalAges) : ""}`
-      );
-      showInfo(
-        "showAvarage",
-        `Média das Idades: ${
-          isNaN(parseInt(totalAges / totalDetections, 10))
-            ? ""
-            : parseInt(totalAges / totalDetections, 10)
-        }`
-      );
-      showInfo("showMale", `Total Masculinos: ${totalMale || ""}`);
-      showInfo("showFemale", `Total Feminino: ${totalFemale || ""}`);
+      const avarageAges = parseInt(totalAges / totalDetections, 10);
+        showInfo("showTotal", `Total de pessoas: ${totalDetections}`);
+        showInfo("showTotalAges", `Total das idades: ${totalDetections > 1 ? parseInt(totalAges) : ""}`);
+        showInfo("showAvarage", `Média das Idades: ${isNaN(avarageAges) ? "" : avarageAges}`);
+        showInfo("showMale", `Total Masculinos: ${totalMale || ""}`);
+        showInfo("showFemale", `Total Feminino: ${totalFemale || ""}`);
+
+
+      if (avarageAges > 30) {
+        music.play();
+      }
     }, 1750);
   }, 100);
 });
