@@ -66,50 +66,48 @@ cam.addEventListener("play", async () => {
       document.getElementById(id).innerHTML = content;
     };
 
-    setTimeout(() => {
-      const totalDetections = resizedDetections.length;
-      show("showTotal", "Total de pessoas: " + totalDetections);
+    const totalDetections = resizedDetections.length;
+    show("showTotal", "Total de pessoas: " + totalDetections);
 
-      const totalAges = resizedDetections.reduce((accumulator, curValue) => {
-        return accumulator + curValue.age;
-      }, 0);
+    const totalAges = resizedDetections.reduce((accumulator, curValue) => {
+      return accumulator + curValue.age;
+    }, 0);
 
-      if (totalDetections > 1) {
-        show("showTotalAges", "Total das idades: " + parseInt(totalAges));
-      } else {
-        show("showTotalAges", "...");
+    if (totalDetections > 1) {
+      show("showTotalAges", "Total das idades: " + parseInt(totalAges));
+    } else {
+      show("showTotalAges", "...");
+    }
+
+    const avarageAges = parseInt(totalAges / totalDetections, 10);
+    if (!isNaN(avarageAges)) {
+      show("showAvarage", "Média das Idades: " + avarageAges);
+    } else {
+      show("showAvarage", "...");
+    }
+
+    let totalMale = 0;
+    let totalFemale = 0;
+
+    resizedDetections.forEach((curValue) => {
+      if (curValue.gender === "male") {
+        totalMale++;
+      } else if (curValue.gender === "female") {
+        totalFemale++;
       }
+    });
 
-      const avarageAges = parseInt(totalAges / totalDetections, 10);
-      if (!isNaN(avarageAges)) {
-        show("showAvarage", "Média das Idades: " + avarageAges);
-      } else {
-        show("showAvarage", "...");
-      }
-
-      let totalMale = 0;
-      let totalFemale = 0;
-
-      resizedDetections.forEach((curValue) => {
-        if (curValue.gender === "male") {
-          totalMale++;
-        } else if (curValue.gender === "female") {
-          totalFemale++;
-        }
-      });
-
-      if (totalMale > 0) {
-        show("showMale", `Total Masculinos: ${totalMale}`);
-        show("showFemale", "...");
-      } else if (totalFemale > 0) {
-        show("showFemale", `Total Feminino: ${totalFemale}`);
-        show("showMale", "...");
-      } else {
-        show("showMale", "...");
-        show("showFemale", "...");
-      }
-    }, 1750);
-  }, 100);
+    if (totalMale > 0) {
+      show("showMale", `Total Masculinos: ${totalMale}`);
+      show("showFemale", "...");
+    } else if (totalFemale > 0) {
+      show("showFemale", `Total Feminino: ${totalFemale}`);
+      show("showMale", "...");
+    } else {
+      show("showMale", "...");
+      show("showFemale", "...");
+    }
+  }, 1750);
 });
 
-document.getElementById("mySidenav").style.width = "250px";
+document.getElementById("navbar").style.width = "250px";
