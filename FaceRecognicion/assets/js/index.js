@@ -49,16 +49,17 @@ cam.addEventListener("play", async () => {
     faceapi.draw.drawDetections(canvas, resizedDetections);
     faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
     faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+
     resizedDetections.forEach((detection) => {
       const { age, gender, genderProbability } = detection;
-      new faceapi.draw.DrawTextField(
+      const textField = new faceapi.draw.DrawTextField(
         [
           `${parseInt(age, 10)} anos`,
           `${gender}  (${parseInt(genderProbability * 100, 10)}%)`,
         ],
-
         detection.detection.box.topRight
-      ).draw(canvas);
+      );
+      textField.draw(canvas);
     });
 
     // sidebar info
@@ -67,47 +68,39 @@ cam.addEventListener("play", async () => {
     };
 
     const totalDetections = resizedDetections.length;
-    show("showTotal", "Total de pessoas: " + totalDetections);
-
-    const totalAges = resizedDetections.reduce((accumulator, curValue) => {
-      return accumulator + curValue.age;
-    }, 0);
-
-    if (totalDetections > 1) {
-      show("showTotalAges", "Total das idades: " + parseInt(totalAges));
-    } else {
-      show("showTotalAges", "...");
-    }
-
-    const avarageAges = parseInt(totalAges / totalDetections, 10);
-    if (!isNaN(avarageAges)) {
-      show("showAvarage", "Média das Idades: " + avarageAges);
-    } else {
-      show("showAvarage", "...");
-    }
-
+    let totalAges = 0;
     let totalMale = 0;
     let totalFemale = 0;
 
-    resizedDetections.forEach((curValue) => {
-      if (curValue.gender === "male") {
+    resizedDetections.forEach((detection) => {
+      totalAges += detection.age;
+      if (detection.gender === "male") {
         totalMale++;
-      } else if (curValue.gender === "female") {
+      } else if (detection.gender === "female") {
         totalFemale++;
       }
     });
 
-    if (totalMale > 0) {
-      show("showMale", `Total Masculinos: ${totalMale}`);
-      show("showFemale", "...");
-    } else if (totalFemale > 0) {
-      show("showFemale", `Total Feminino: ${totalFemale}`);
-      show("showMale", "...");
-    } else {
-      show("showMale", "...");
-      show("showFemale", "...");
-    }
-  }, 1750);
-});
+    const showInfo = (id, content) => {
+      document.getElementById(id).innerHTML = content;
+    };
 
-document.getElementById("navbar").style.width = "250px";
+    setTimeout(() => {
+      showInfo("showTotal", `Total de pessoas: ${totalDetections}`);
+      showInfo(
+        "showTotalAges",
+        `Total das idades: ${totalDetections > 1 ? parseInt(totalAges) : ""}`
+      );
+      showInfo(
+        "showAvarage",
+        `Média das Idades: ${
+          isNaN(parseInt(totalAges / totalDetections, 10))
+            ? ""
+            : parseInt(totalAges / totalDetections, 10)
+        }`
+      );
+      showInfo("showMale", `Total Masculinos: ${totalMale || ""}`);
+      showInfo("showFemale", `Total Feminino: ${totalFemale || ""}`);
+    }, 1750);
+  }, 100);
+});
