@@ -3,11 +3,13 @@ const express = require("express")
 const app = express()
 const path = require('path')
 
+app.use(express.urlencoded({extended: false}));
+
 
 app.use('/assets', express.static('assets'))
 
 // Routes
-app.get('/', (req, res) => {
+app.get('/home', (req, res) => {
     res.render("index.ejs")
 })
 
