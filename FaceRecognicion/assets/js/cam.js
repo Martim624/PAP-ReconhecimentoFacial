@@ -24,16 +24,17 @@ const startVideo = () => {
 };
 
 Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri("./assets/lib/face-api/models"),
-  faceapi.nets.faceLandmark68Net.loadFromUri("./assets/lib/face-api/models"),
-  faceapi.nets.faceRecognitionNet.loadFromUri("./assets/lib/face-api/models"),
-  faceapi.nets.faceExpressionNet.loadFromUri("./assets/lib/face-api/models"),
-  faceapi.nets.ageGenderNet.loadFromUri("./assets/lib/face-api/models"),
-  faceapi.nets.ssdMobilenetv1.loadFromUri("./assets/lib/face-api/models"),
+  faceapi.nets.tinyFaceDetector.loadFromUri("../assets/lib/face-api/models/tiny_face_detector_model-weights_manifest.json"),
+  faceapi.nets.faceLandmark68Net.loadFromUri("../assets/lib/face-api/models/face_landmark_68_model-weights_manifest.json"),
+  faceapi.nets.faceRecognitionNet.loadFromUri("../assets/lib/face-api/models/face_recognition_model-weights_manifest.json"),
+  faceapi.nets.faceExpressionNet.loadFromUri("../assets/lib/face-api/models/face_expression_model-weights_manifest.json"),
+  faceapi.nets.ageGenderNet.loadFromUri("../assets/lib/face-api/models/age_gender_model-weights_manifest.json"),
+  faceapi.nets.ssdMobilenetv1.loadFromUri("../assets/lib/face-api/models/ssd_mobilenetv1_model-weights_manifest.json"),
 ]).then(startVideo);
 
 cam.addEventListener("play", async () => {
   const canvas = faceapi.createCanvasFromMedia(cam);
+  console.log(canvas);
   const canvasSize = {
     width: cam.width,
     height: cam.height,

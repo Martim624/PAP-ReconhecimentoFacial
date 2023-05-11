@@ -1,12 +1,12 @@
-<!doctype html>
-<html lang="en" class="h-100">
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.98.0">
-    <title>Desphixs - NodeJs Login and Register</title>
+    <title>YAgeTunes</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/cover/">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="apple-touch-icon" href="/docs/5.2/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
@@ -14,6 +14,14 @@
     <link rel="icon" href="/docs/5.2/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
     <link rel="manifest" href="/docs/5.2/assets/img/favicons/manifest.json">
     <link rel="mask-icon" href="/docs/5.2/assets/img/favicons/safari-pinned-tab.svg" color="#712cf9">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://bootswatch.com/4/journal/bootstrap.min.css"
+    />
     <link rel="icon" href="/docs/5.2/assets/img/favicons/favicon.ico">
     <meta name="theme-color" content="#712cf9">
 
@@ -76,34 +84,27 @@
     </style>
 
     <!-- Custom styles for this template -->
+    <link href="style.css" rel="stylesheet">
   </head>
-  <body class="d-flex h-100 text-center text-white bg-white">
-      <div class="container d-flex w-100 h-100 p-3 mx-auto flex-column">
-        <header class="mb-auto">
-          <div>
-            <h3 class="float-md-start mb-0 text-white">YAgeTunes</h3>
-            <nav class="nav nav-masthead justify-content-center float-md-end">
-              <form action="/logout?_method=DELETE" method="POST">
-                <button class="nav-link fw-bold py-1 px-0 btn p=3 btn-lg text-white" type="submit"  >Logout</button>
-              </form>
-            </nav>
-          </div>
-        </header>
+  <body>
+    <div class="container"><%- body %></div>
 
-        <main class="px-3">
-      
-          <h1 class="text-white">Hello there </h1>
-          <p class="lead text-white">Welcome to YAgeTunes App</p>
-          <p class="lead">
-            <a href="users/cam" class="btn btn-lg btn-secondary fw-bold text-black border-white bg-white">Camera</a>
-          </p>
-        </main>
 
-        <footer class="mt-auto text-white-50">
-          <p class="text-white">YAgeTunes <a href="" class="text-white">Copyright</a>, by <a href="" class="text-white">Martim Marques</a>.</p>
-        </footer>
-      </div>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+      integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+      integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+      crossorigin="anonymous"
+    ></script>
 
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
   </body>
 </html>
