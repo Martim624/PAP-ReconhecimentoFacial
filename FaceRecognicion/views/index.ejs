@@ -6,7 +6,6 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.98.0">
-    <title>Desphixs - NodeJs Login and Register</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/cover/">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="apple-touch-icon" href="/docs/5.2/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
@@ -83,6 +82,10 @@
           <div>
             <h3 class="float-md-start mb-0 text-white">YAgeTunes</h3>
             <nav class="nav nav-masthead justify-content-center float-md-end">
+              <form action="users/login">
+                <button class="nav-link fw-bold py-1 px-0 btn p=3 btn-lg text-white" type="submit"> Login </button>
+              </form>
+              <div>|</div>
               <form action="/logout?_method=DELETE" method="POST">
                 <button class="nav-link fw-bold py-1 px-0 btn p=3 btn-lg text-white" type="submit"  >Logout</button>
               </form>
@@ -92,7 +95,7 @@
 
         <main class="px-3">
       
-          <h1 class="text-white">Hello there </h1>
+          <h1 class="text-white" style="font-size: 50px;">Hello there </h1>
           <p class="lead text-white">Welcome to YAgeTunes App</p>
           <p class="lead">
             <a href="users/cam" class="btn btn-lg btn-secondary fw-bold text-black border-white bg-white">Camera</a>
