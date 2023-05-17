@@ -3,12 +3,15 @@ const express = require("express")
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 const flash = require('connect-flash')
-const session = require('express-session')
+const session = require('express-session');
+const passport = require("passport");
 
 const app = express()
 
-// DB Config
+// Passport config
+require('./config/passport')(passport);
 
+// DB Config
 const db = require('./config/keys').MongoURI;
 
 // Connect to Mongo
@@ -32,6 +35,10 @@ app.use(session({
     saveUninitialized: true
   }));
 
+  // Passport middleaware
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   // Connect flash
   app.use(flash());
 
@@ -52,26 +59,3 @@ app.use('/users', require('./routes/users'));
 app.listen(3000)
 
 
-
-
-/*
-
-app.use(express.urlencoded({extended: false}));
-
-
-app.get('/home', (req, res) => {
-    res.render("index.ejs")
-})
-
-app.get('/login', (req, res) => {
-    res.render("login.ejs")
-})
-
-app.get('/register', (req, res) => {
-    res.render("register.ejs")
-})
-
-app.get('/cam', (req, res) => {
-    res.render("cam.ejs")
-})
-*/
