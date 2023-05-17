@@ -86,13 +86,12 @@ router.post('/register', (req, res) => {
 })
 
 // Login Handle
-router.post('/register', (req, res, next) => {
+router.post('/login', (req, res, next) => {
     passport.authenticate('local', {
-      successRedirect: 'cam',
-      failureRedirect: 'login',
+      successRedirect: '/users/cam',
+      failureRedirect: '/users/login',
       failureFlash: true
     })(req, res, next);
   });
-  
 
 module.exports = router;
