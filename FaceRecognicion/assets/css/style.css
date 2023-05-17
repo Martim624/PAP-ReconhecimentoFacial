@@ -70,17 +70,17 @@ h6 {
 # Header
 --------------------------------------------------------------*/
 #header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 300px;
-  transition: all ease-in-out 0.5s;
-  z-index: 9997;
-  transition: all 0.5s;
-  padding: 0 15px;
-  background: #040b14;
-  overflow-y: auto;
+    position: fixed;
+    top: 0;
+    left: 0px;
+    bottom: 0;
+    width: 342px;
+    transition: all ease-in-out 0.5s;
+    z-index: 10043;
+    transition: all 0.5s;
+    padding: 10px 15px;
+    background: #040b14;
+    overflow-y: auto;
 }
 
 #header .profile img {
