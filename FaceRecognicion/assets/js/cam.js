@@ -1,6 +1,6 @@
 const cam = document.getElementById("cam");
 const music = document.getElementById("myAudio");
-
+const video = document.getElementById("hero")
 music.volume = 0.1;
 
 const startVideo = () => {
@@ -34,13 +34,12 @@ Promise.all([
 
 cam.addEventListener("play", async () => {
   const canvas = faceapi.createCanvasFromMedia(cam);
-  console.log(canvas);
   const canvasSize = {
     width: cam.width,
     height: cam.height,
   };
   faceapi.matchDimensions(canvas, canvasSize);
-  document.body.appendChild(canvas);
+  video.appendChild(canvas);
   setInterval(async () => {
     const detections = await faceapi
       .detectAllFaces(cam, new faceapi.TinyFaceDetectorOptions())
