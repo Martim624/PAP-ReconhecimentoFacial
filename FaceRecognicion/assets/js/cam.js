@@ -32,6 +32,7 @@ Promise.all([
   faceapi.nets.ssdMobilenetv1.loadFromUri("../assets/lib/face-api/models/ssd_mobilenetv1_model-weights_manifest.json"),
 ]).then(startVideo);
 
+let avarageAges = 0;
 cam.addEventListener("play", async () => {
   const canvas = faceapi.createCanvasFromMedia(cam);
   const canvasSize = {
@@ -88,19 +89,31 @@ cam.addEventListener("play", async () => {
       document.getElementById(id).innerHTML = content;
     };
 
+    avarageAges = parseInt(totalAges / totalDetections, 10);
+
+    if(avarageAges != 0) {
+      if (avarageAges > 15 && avarageAges <=21) {
+        const source = document.createElement("source");
+        source.src = "/assets/music/song1.mp3"
+        music.appendChild(source);
+        music.play();
+      } else if(avarageAges > 21 ){
+        const source = document.createElement("source");
+        source.src = "/assets/music/song2.mp3"
+        music.appendChild(source);
+        music.play();
+      }
+    }
+
+    
+    
     setTimeout(() => {
-      const avarageAges = parseInt(totalAges / totalDetections, 10);
         showInfo("showTotal", `Total de pessoas: ${totalDetections}`);
         showInfo("showTotalAges", `Total das idades: ${totalDetections > 1 ? parseInt(totalAges) : ""}`);
         showInfo("showAvarage", `Média das Idades: ${isNaN(avarageAges) ? "" : avarageAges}`);
         showInfo("showMale", `Total Masculinos: ${totalMale || ""}`);
         showInfo("showFemale", `Total Feminino: ${totalFemale || ""}`);
 
-      if (avarageAges  < 13) {
-        music.play();
-      } else {
-        music.play();
-      }
     }, 1750);
   }, 100);
 });
