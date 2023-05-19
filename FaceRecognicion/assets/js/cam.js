@@ -96,8 +96,9 @@ cam.addEventListener("play", async () => {
         showInfo("showMale", `Total Masculinos: ${totalMale || ""}`);
         showInfo("showFemale", `Total Feminino: ${totalFemale || ""}`);
 
-
-      if (avarageAges > 30) {
+      if (avarageAges  < 13) {
+        music.play();
+      } else {
         music.play();
       }
     }, 1750);
