@@ -30,7 +30,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/Martim624/PAP-ReconhecimentoFacial/blob/main/FaceRecognicion/assets/img/logo.png">
+  <a href="https://github.com/Martim624/PAP-ReconhecimentoFacial">
     <img src="img/logo.png" alt="Logo" width="80" height="80">
   </a>
 
