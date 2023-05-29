@@ -19,6 +19,12 @@ router.get('/cam', (req, res) => {
     res.render("cam.ejs")
 })
 
+router.get('/admin', (req, res) => {
+    res.render("admin.ejs")
+})
+
+
+
 // Register Handle
 router.post('/register', (req, res) => {
     const { name, email, password, password2} = req.body;
