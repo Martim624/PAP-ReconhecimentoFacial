@@ -92,12 +92,12 @@ cam.addEventListener("play", async () => {
     avarageAges = parseInt(totalAges / totalDetections, 10);
 
     if(avarageAges != 0) {
-      if (avarageAges > 15 && avarageAges <=21) {
+      if (avarageAges > 10 && avarageAges <=15) {
         const source = document.createElement("source");
-        source.src = "/assets/music/song1.mp3"
+        source.src = "/assets/music/song2.mp3"
         music.appendChild(source);
         music.play();
-      } else if(avarageAges > 21 ){
+      } else if(avarageAges > 15 ){
         const source = document.createElement("source");
         source.src = "/assets/music/song2.mp3"
         music.appendChild(source);
