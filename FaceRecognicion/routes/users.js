@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs')
 const passport = require('passport')
+const { ensureAuthenticated } = require('../config/auth')
+
 
 const app = express()
 
@@ -15,12 +17,14 @@ router.get('/login',(req, res ) => res.render('login'))
 
 router.get('/register',(req, res ) => res.render('register'))
 
-router.get('/cam', (req, res) => {
+router.get('/cam', ensureAuthenticated, (req, res) => {
     res.render("cam.ejs")
 })
 
 router.get('/admin', (req, res) => {
-    res.render("admin.ejs")
+    res.render("admin.ejs", {
+        user: req.user.name 
+    })
 })
 
 
@@ -98,6 +102,16 @@ router.post('/login', (req, res, next) => {
       failureRedirect: '/users/login',
       failureFlash: true
     })(req, res, next);
+  });
+
+// Logout Handle
+router.get('/logout', function(req, res, next) {
+    req.logout(function(err) {
+      if (err) { return next(err); }
+      req.flash('success_msg', 'You are logged out!')
+      res.redirect('/users/login');
+      
+    });
   });
 
 module.exports = router;
