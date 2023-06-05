@@ -91,22 +91,27 @@ cam.addEventListener("play", async () => {
 
     avarageAges = parseInt(totalAges / totalDetections, 10);
 
-    if(avarageAges != 0) {
+    if(avarageAges !== 0) {
       if (avarageAges > 10 && avarageAges <=15) {
         const source = document.createElement("source");
         source.src = "/assets/music/song2.mp3"
         music.appendChild(source);
         music.play();
+        music.addEventListener('ended', function() {
+        music.pause();
+        source.remove();
+        });
       } else if(avarageAges > 15 ){
         const source = document.createElement("source");
-        source.src = "/assets/music/song2.mp3"
+        source.src = "/assets/music/song1.mp3"
         music.appendChild(source);
         music.play();
+        music.addEventListener('ended', function() {
+          music.pause();
+        source.remove();
+       });
       }
     }
-
-    
-    
     setTimeout(() => {
         showInfo("showTotal", `Total de pessoas: ${totalDetections}`);
         showInfo("showTotalAges", `Total das idades: ${totalDetections > 1 ? parseInt(totalAges) : ""}`);
