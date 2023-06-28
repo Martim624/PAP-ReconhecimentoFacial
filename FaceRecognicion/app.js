@@ -54,8 +54,6 @@ app.use(session({
 app.use('/', require('./routes/index'))
 app.use('/users', require('./routes/users'));
 
-
-
 // End Routes
 app.listen(3000)
 
