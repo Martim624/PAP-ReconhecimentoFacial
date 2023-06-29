@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs')
 const passport = require('passport')
-const { ensureAuthenticated } = require('../config/auth')
+const { ensureAuthenticated, ensureAdmin } = require('../config/auth')
 
 
 const app = express()
@@ -24,7 +24,7 @@ router.get('/cam', ensureAuthenticated, (req, res) => {
 })
 
 // Admin model
-router.get('/admin', ensureAuthenticated,  (req, res) => {
+router.get('/admin', ensureAdmin,  (req, res) => {
     User.find().then(users => {
             res.render('admin.ejs', { "users": users });
     })
@@ -108,6 +108,12 @@ router.post('/login', (req, res, next) => {
 
 // Login Admin Handle
   router.post('/admin', (req, res, next) => {
+    passport.authenticate('local', {
+        successRedirect: '/admin',
+        failureRedirect: '/backoffice',
+        failureFlash: true
+      })(req, res, next);
+    /*
     passport.authenticate('local', (err, user, info) => {
         if (err) {
             // Handle error
@@ -130,7 +136,9 @@ router.post('/login', (req, res, next) => {
         // User is not an admin, redirect to another page or show an error message
         req.flash('error_msg', 'You are not authorized to access the admin page.');
         return res.redirect('/backoffice');
-    })(req, res, next);
+    })(req, res, next);*/
+
+
 });
 
 // Logout Handle

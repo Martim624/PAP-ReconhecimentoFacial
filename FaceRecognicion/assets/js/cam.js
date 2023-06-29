@@ -107,7 +107,7 @@ cam.addEventListener("play", async () => {
         music.appendChild(source);
         music.play();
         music.addEventListener('ended', function() {
-          music.pause();
+        music.pause();
         source.remove();
        });
       }

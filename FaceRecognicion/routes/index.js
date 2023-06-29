@@ -7,7 +7,7 @@ router.get('/', (req, res) => res.render('index'));
 
 router.get('/backoffice', (req, res) => res.render('backoffice'));
 
-router.get('/admin', (req, res) => {
+router.get('/admin', ensureAdmin, (req, res) => {
   User.find().then(users => {
     res.render('admin.ejs', { "users": users });
   });

@@ -40,10 +40,6 @@ module.exports = function(passport) {
           .catch(err => done(err));
       })
     
-    /*  passport.isAdmin = function(req, res, next) {
-        if (req.isAuthenticated() && req.user.role === 'admin') {
-            return next(); // User is admin, proceed to the next middleware
-        }
-        res.redirect('/backoffice'); // User is not admin, redirect to home page or any other page you want
-    } */
+
+
 };
