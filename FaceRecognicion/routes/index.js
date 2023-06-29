@@ -19,17 +19,14 @@ router.get('/users/cam', ensureAuthenticated, (req, res ) => res.render('cam', {
     name: req.user.name 
 }))
   
-router.get('/action', (req, res, next) => {
-    User.find().exec()
-      .then((data) => {
-        res.render('admin', { title: 'Action', users: data });
-      })
-      .catch((err) => {
-        console.error(err);
-        next(err);
-      });
-  });
+router.get('/action', (req,res,next) => {
+    users.exec( (err,data) => {
+      if(err) throw err;
   
+      res.render('edit-delete-data', {title: 'Action', records: data});
+    });
+  });
+
 router.get('/edit/:id', (req, res, next) => {
     console.log(req.params.id);
     var id = req.params.id;
@@ -46,7 +43,7 @@ router.get('/edit/:id', (req, res, next) => {
   });
 
   router.post('/update/', (req, res, next) => {
-    var update = User.findByIdAndUpdate(req.body.id, {
+    var update = User.findByIdAndUpdate(req.params.id, {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
