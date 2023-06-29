@@ -129,6 +129,13 @@ router.post('/login', (req, res, next) => {
     })(req, res, next);
 });
 
+router.delete('/users/:id', (req, res) => {
+    const userId = req.id;
+    // Your code to delete the user from the database goes here
+    res.send('User deleted successfully');
+  });
+
+
 // Logout Handle
 router.get('/logout', function(req, res, next) {
     req.logout(function(err) {
@@ -145,6 +152,4 @@ router.get('/logoutAdmin', function(req, res, next) {
       res.redirect('/backoffice');
     });
 });
-
-
 module.exports = router;
