@@ -23,7 +23,7 @@
                   <div class="panel-heading">
                       <div class="panel-title">User Details Form</div><br>
                        </div>  
-                  <div class="panel-body" >
+                  <div class="panel-body">
                       <form action="/update/"  class="form-horizontal" method="post" >
                           
                           <div id="signupalert" style="display:none" class="alert alert-danger">
@@ -34,10 +34,10 @@
                           <div class="form-group">
                               <label for="firstname" class="col-md-3 control-label">Name</label>
                               <div class="col-md-9">
-                                  <input type="text" class="form-control" name="uname" value="<%= user.name %>" placeholder="Enter Your Name">
+                                  <input type="text" class="form-control" name="name" value="<%= user.name %>" placeholder="Enter Your Name">
                               </div>
                           </div>
-                            
+                          
                           <div class="form-group">
                               <label for="email" class="col-md-3 control-label">Email</label>
                               <div class="col-md-9">
@@ -59,7 +59,7 @@
                           <div class="form-group">
                               <label for="lastname" class="col-md-3 control-label">User Role</label>
                               <div class="col-md-9">
-                                <select class="form-control" name="emptype">
+                                <select class="form-control" name="role">
                                     <option >Select User Role</option>
                                   <option value="user" <% if(user.role == 'user') { %> selected <% } %>>User</option>
                                   <option value="admin" <% if(user.role == 'admin') { %> selected <% } %>>Admin</option>

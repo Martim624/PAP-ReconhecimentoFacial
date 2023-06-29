@@ -1,97 +1,106 @@
 const express = require('express');
 const router = express.Router();
-const { ensureAuthenticated, ensureAuthenticatedAdmin, ensureAdmin } = require('../config/auth')
-const User = require('../models/User')
+const { ensureAuthenticated, ensureAuthenticatedAdmin, ensureAdmin } = require('../config/auth');
+const User = require('../models/User');
 
+router.get('/', (req, res) => res.render('index'));
 
-router.get('/',(req, res ) => res.render('index'));
-
-router.get('/backoffice',(req, res ) => res.render('backoffice'));
-
+router.get('/backoffice', (req, res) => res.render('backoffice'));
 
 router.get('/admin', (req, res) => {
-    User.find().then(users => {
-            res.render('admin.ejs', { "users": users });
-    })
+  User.find().then(users => {
+    res.render('admin.ejs', { "users": users });
+  });
 });
 
-router.get('/users/cam', ensureAuthenticated, (req, res ) => res.render('cam', {
-    name: req.user.name 
-}))
-  
-router.get('/action', (req,res,next) => {
-    users.exec( (err,data) => {
-      if(err) throw err;
-  
-      res.render('edit-delete-data', {title: 'Action', records: data});
-    });
-  });
+router.get('/users/cam', ensureAuthenticated, (req, res) => res.render('cam', {
+  name: req.user.name
+}));
 
-router.get('/edit/:id', (req, res, next) => {
-    console.log(req.params.id);
-    var id = req.params.id;
-    var edit = User.findById(id).exec(); // Remove the callback function
-  
-    // render file
-    edit.then((data) => {
-      res.render('edit', { title: 'Edit form', user: data });
-    })
-    .catch((err) => {
-      console.error(err);
-      next(err);
-    })
-  });
+// Action to db
+router.get('/action', async (req, res, next) => {
+  try {
+    const users = await User.find().exec();
+    res.render('admin', { title: 'Action', users: users });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
 
-  router.post('/update/', (req, res, next) => {
-    var update = User.findByIdAndUpdate(req.params.id, {
+// Get value from model
+router.get('/add', (req, res) => {
+  res.render('add', { title: 'Add User' });
+});
+
+// Add User
+router.post('/add', async (req, res, next) => {
+  try {
+    const newUser = new User({
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
       role: req.body.role,
     });
-  
-    update
-      .then(() => {
-        res.redirect('/action/');
-      })
-      .catch((err) => {
-        console.error(err);
-        next(err);
-      });
-  });
 
-  
-module.exports = router;
+    const savedUser = await newUser.save();
+    console.log(savedUser);
+    res.redirect('/action');
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
 
+// Edit 
+router.get('/edit/:id', (req, res, next) => {
+  var id = req.params.id;
+  var edit = User.findById(id).exec();
 
-/*
-outer.post('/update/', (req,res,next) => {
-    var update = User.findByIdAndUpdate(req.params.id, {
-      name: req.params.name,
-      email: req.params.email,
-      password: req.params.password,
-      role: req.params.role,
-      date: req.params.date,
+  // render file
+  edit.then((data) => {
+    res.render('edit', { title: 'Edit form', user: data });
+  })
+    .catch((err) => {
+      console.error(err);
+      next(err);
     });
-  
-    update.exec( (err,data) => {
-      if(err) throw err;
-  
-      res.redirect('/action/');
-    })
-  });
-  });
-  
-  
-  // Route for dalete data 
-  router.get('/delete/:id', (req,res, next) => {
-    var id = req.params.id;
-    var del = User.findByIdAndDelete(id);
-  
-    // render file
-    del.exec( (err, data) => {
-      if(err) throw err;
-      res.redirect('/action');
-      
+});
 
-      */
+// Update 
+router.post('/update/', async (req, res, next) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(req.body.id, {
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      role: req.body.role,
+    }, { new: true });
+
+    if (!updatedUser) {
+      // User with the specified ID not found
+      return res.status(404).send('User not found');
+    }
+
+    console.log(updatedUser);
+    res.redirect('/action/');
+  } catch (err) {
+    // Handle the error appropriately
+    next(err);
+  }
+});
+
+// Delete
+router.get('/delete/:id', (req, res, next) => {
+  var id = req.params.id;
+  User.findByIdAndDelete(id)
+    .then((data) => {
+      res.redirect('/action');
+    })
+    .catch((err) => {
+      console.error(err);
+      next(err);
+    });
+});
+
+module.exports = router;

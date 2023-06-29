@@ -9,18 +9,21 @@ const app = express()
 
 app.use('/assets', express.static('../assets'))
 
-//User model 
+// User model 
 const User = require('../models/User')
 
-
+// Login model
 router.get('/login',(req, res ) => res.render('login'))
 
+// Register model
 router.get('/register',(req, res ) => res.render('register'))
 
+// Cam model
 router.get('/cam', ensureAuthenticated, (req, res) => {
     res.render("cam.ejs")
 })
 
+// Admin model
 router.get('/admin', ensureAuthenticated,  (req, res) => {
     User.find().then(users => {
             res.render('admin.ejs', { "users": users });
@@ -103,6 +106,7 @@ router.post('/login', (req, res, next) => {
     })(req, res, next);
   });
 
+// Login Admin Handle
   router.post('/admin', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if (err) {
@@ -138,6 +142,7 @@ router.get('/logout', function(req, res, next) {
     });
 });
 
+// Logout Admin Handle
 router.get('/logoutAdmin', function(req, res, next) {
     req.logout(function(err) {
       if (err) { return next(err); }
@@ -145,4 +150,5 @@ router.get('/logoutAdmin', function(req, res, next) {
       res.redirect('/backoffice');
     });
 });
+
 module.exports = router;
