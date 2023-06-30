@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <!-- Design by foolishdeveloper.com -->
-    <title>YAgeTunes - BackOffice</title>
+    <title>YAgeTunes - Backoffice</title>
  
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -17,7 +17,9 @@
     box-sizing: border-box;
 }
 body{
-    background-color: #080710;
+    background-image: url('assets/img/background6.gif'); 
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 .background{
     width: 430px;
@@ -51,7 +53,7 @@ body{
     bottom: -80px;
 }
 form{
-    height: 520px;
+    height: 550px;
     width: 400px;
     background-color: rgba(255,255,255,0.13);
     position: absolute;
@@ -153,9 +155,9 @@ button{
         <div>
             <p style="margin-top: 20px;"><a href="/">Home</a></p>
         </div>
+        <%- include('./partials/messages.ejs') %>
     </form>
     <div>
-        <%- include('./partials/messages.ejs') %>
     </div>
 
 </body>

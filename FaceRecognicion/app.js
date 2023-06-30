@@ -23,6 +23,8 @@ mongoose.connect(db,{useNewUrlParser: true})
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
+app.set("layout", false);
+
 app.use('/assets', express.static('assets'))
 
 // Bodyparser
