@@ -2,31 +2,33 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs')
 const passport = require('passport')
-const { ensureAuthenticated } = require('../config/auth')
+const { ensureAuthenticated, ensureAdmin } = require('../config/auth')
 
 
 const app = express()
 
 app.use('/assets', express.static('../assets'))
 
-//User model 
+// User model 
 const User = require('../models/User')
 
-
+// Login model
 router.get('/login',(req, res ) => res.render('login'))
 
+// Register model
 router.get('/register',(req, res ) => res.render('register'))
 
+// Cam model
 router.get('/cam', ensureAuthenticated, (req, res) => {
     res.render("cam.ejs")
 })
 
-router.get('/admin', (req, res) => {
-    res.render("admin.ejs", {
-        user: req.user.name 
+// Admin model
+router.get('/admin', ensureAdmin,  (req, res) => {
+    User.find().then(users => {
+            res.render('admin.ejs', { "users": users });
     })
-})
-
+});
 
 
 // Register Handle
@@ -104,14 +106,57 @@ router.post('/login', (req, res, next) => {
     })(req, res, next);
   });
 
+// Login Admin Handle
+  router.post('/admin', (req, res, next) => {
+    passport.authenticate('local', {
+        successRedirect: '/admin',
+        failureRedirect: '/backoffice',
+        failureFlash: true
+      })(req, res, next);
+    /*
+    passport.authenticate('local', (err, user, info) => {
+        if (err) {
+            // Handle error
+            req.flash('error_msg', 'An error occurred during authentication: ' + err);
+            return next(err);
+        }
+
+        if (!user) {
+            // Authentication failed
+            req.flash('error_msg', 'Invalid credentials. Please try again.');
+            return res.redirect('/backoffice');
+        }
+
+        // Check if the user has the role of admin
+        if (user.role === 'admin') {
+            // User is an admin, redirect to the admin page
+            return res.redirect('/admin');
+        }
+
+        // User is not an admin, redirect to another page or show an error message
+        req.flash('error_msg', 'You are not authorized to access the admin page.');
+        return res.redirect('/backoffice');
+    })(req, res, next);*/
+
+
+});
+
 // Logout Handle
 router.get('/logout', function(req, res, next) {
     req.logout(function(err) {
       if (err) { return next(err); }
       req.flash('success_msg', 'You are logged out!')
       res.redirect('/users/login');
-      
     });
-  });
+});
+
+// Logout Admin Handle
+router.get('/logoutAdmin', function(req, res, next) {
+    req.logout(function(err) {
+      if (err) { return next(err); }
+      req.flash('success_msg', 'You are logged out!')
+      res.redirect('/backoffice');
+    });
+});
 
 module.exports = router;

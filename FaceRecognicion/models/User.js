@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// User Modal
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -17,6 +18,11 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],   
+        default: 'user'
+    }
 });
 
 const User = mongoose.model('User', UserSchema);
