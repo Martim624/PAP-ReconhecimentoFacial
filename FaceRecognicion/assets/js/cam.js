@@ -1,7 +1,7 @@
 const cam = document.getElementById("cam");
 const music = document.getElementById("myAudio");
 const video = document.getElementById("hero")
-music.volume = 0.1;
+music.volume = 1;
 
 const startVideo = () => {
   navigator.mediaDevices.enumerateDevices().then((devices) => {
