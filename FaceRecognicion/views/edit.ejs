@@ -8,19 +8,67 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
+  <style>
+	body{
+		background-image: url('../assets/img/background6.gif');
+        background-repeat: no-repeat;
+        background-size: cover ;
+		color: rgb(255, 255, 255) !important
+	}
+	button{
+	  margin-top: 50px;
+	  width: 100%;
+	  background-color: #ffffff;
+	  color: #080710;
+	  padding: 15px 0;
+	  font-size: 18px;
+	  font-weight: 600;
+	  border-radius: 5px;
+	  cursor: pointer;
+	} 
+	header {
+         background-color: rgb(255, 255, 255);
+         padding: 0;
+         transition: all 0.4s ease 0s;
+         height: 85px;
+         /* text-align: center; */
+         display: flex;
+         justify-content: space-between;
+         color: #000000;
+         margin: 0;
+         border-bottom: solid 2px #000000;
+         }
+         *, ::after, ::before {
+         box-sizing: border-box;
+         }
+</style>
+<header id="site-header">
+	<div class="container" style="max-width: 100% !important">
+	   <nav class="navbar navbar-expand-lg navbar-light stroke">
+		  <a class="navbar-brand" href="/">
+		   <img id="icon-branco" src="/assets/img/logoblack.png" alt="logo" style="width: 8%;">
+		  <img id="icon-branco" src="/assets/img/yAgeTunes.png" alt="logo" style="width: 26%;">
+		  </a>
+		  <div class="collapse navbar-collapse" id="navbarScroll" style="margin-left: 48%;">
+			 <ul class="navbar-nav mx-lg-auto my-2 my-lg-0 navbar-nav-scroll fix">
+				<li class="nav-item">
+				   <a class="nav-link" aria-current="page" href="/admin" style="font-size: 25px;">Back</a>
+				</li>
+			 </ul>
+		  </div>
+	   </nav>
+	</div>
+ </header>
   <body>
-    <h1>Edit</h1>
-   
-<!-- Insert form  -->
+    <div>
     <div class="container">
       <div class="row">
           <div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
               <div class="panel panel-info">
                   <div class="panel-heading">
-                      <div class="panel-title">User Details Form</div><br>
+                    <h1>Edit</h1>
                        </div>  
                   <div class="panel-body">
                       <form action="/update/"  class="form-horizontal" method="post" >
@@ -68,13 +116,13 @@
                           <div class="form-group">
                               <!-- Button -->
                               <div class="col-md-offset-3 col-md-9">
-                              <input type="submit" type="button"  value="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary">Edit User</button>
                               </div>
                           </div>
                       </form>
                    </div>
               </div>
-
+            </div>
   </body>
 </html>
 
