@@ -1,7 +1,7 @@
 const cam = document.getElementById("cam");
 const music = document.getElementById("myAudio");
 const video = document.getElementById("hero")
-music.volume = 1;
+music.volume = 0.25;
 
 const startVideo = () => {
   navigator.mediaDevices.enumerateDevices().then((devices) => {
@@ -58,7 +58,7 @@ cam.addEventListener("play", async () => {
       const { age, gender, genderProbability } = detection;
       const textField = new faceapi.draw.DrawTextField(
         [
-          `${parseInt(age, 10)} anos`,
+          `${parseInt(age, 10)} years`,
           `${gender}  (${parseInt(genderProbability * 100, 10)}%)`,
         ],
         detection.detection.box.topRight
@@ -92,32 +92,41 @@ cam.addEventListener("play", async () => {
     avarageAges = parseInt(totalAges / totalDetections, 10);
 
     if(avarageAges !== 0) {
-      if (avarageAges > 10 && avarageAges <=25) {
+      if (avarageAges < 23) {
         const source = document.createElement("source");
-        source.src = "/assets/music/song1.mp3"
+        source.src = "/assets/music/song4.mp3"
         music.appendChild(source);
         music.play();
         music.addEventListener('ended', function() {
         music.pause();
         source.remove();
         });
-      } else if(avarageAges > 25 ){
+      } else if(avarageAges < 33){
         const source = document.createElement("source");
-        source.src = "/assets/music/song2.mp3"
+        source.src = "/assets/music/song3.mp3"
         music.appendChild(source);
         music.play();
         music.addEventListener('ended', function() {
         music.pause();
         source.remove();
        });
-      }
+      } else if(avarageAges < 60){
+        const source = document.createElement("source");
+        source.src = "/assets/music/song5.mp3"
+        music.appendChild(source);
+        music.play();
+        music.addEventListener('ended', function() {
+        music.pause();
+        source.remove();
+       });
     }
+  }
     setTimeout(() => {
-        showInfo("showTotal", `Total de pessoas: ${totalDetections}`);
-        showInfo("showTotalAges", `Total das idades: ${totalDetections > 1 ? parseInt(totalAges) : ""}`);
-        showInfo("showAvarage", `Média das Idades: ${isNaN(avarageAges) ? "" : avarageAges}`);
-        showInfo("showMale", `Total Masculinos: ${totalMale || ""}`);
-        showInfo("showFemale", `Total Feminino: ${totalFemale || ""}`);
+        showInfo("showTotal", `Total of Detections: ${totalDetections}`);
+        showInfo("showTotalAges", `Total of Ages: ${totalDetections > 1 ? parseInt(totalAges) : ""}`);
+        showInfo("showAvarage", `Average of Ages: ${isNaN(avarageAges) ? "" : avarageAges}`);
+        showInfo("showMale", `Total Male: ${totalMale || ""}`);
+        showInfo("showFemale", `Total Female: ${totalFemale || ""}`);
 
     }, 1750);
   }, 100);
