@@ -5,6 +5,40 @@ const passport = require('passport')
 const { ensureAuthenticated, ensureAdmin } = require('../config/auth')
 
 
+// Email Controller
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "xxlordhdxx624@gmail.com",
+    pass: "eeijtawajfifjolp"
+  }
+})
+
+const mailOptions = {
+    from: "yagetunes@info.pt",
+    to: "xxlordhdxx624@gmail.com",
+    subject: "Novo Email Registado",
+    html: `
+      <html>
+        <body>
+          <h1>Bem-vindo ao YAgeTunes!</h1>
+          <p>O seu email foi registado com sucesso.</p>
+          <p>Agradecemos por se juntar a nós.</p>
+          <p>Aqui estão os detalhes do seu novo email:</p>
+          <ul>
+            <li><strong>Endereço de Email:</strong> </li>
+            <li><strong>Data de Registo:</strong> 09 de setembro de 2023</li>
+          </ul>
+          <p>Por favor, mantenha as suas credenciais em segurança e não as partilhe com ninguém.</p>
+          <p>Se tiver alguma dúvida ou precisar de assistência, não hesite em contactar-nos.</p>
+          <p>Obrigado!</p>
+        </body>
+      </html>
+    `,
+  };
+  
 const app = express()
 
 app.use('/assets', express.static('../assets'))
@@ -33,38 +67,36 @@ router.get('/admin', ensureAdmin,  (req, res) => {
 
 // Register Handle
 router.post('/register', (req, res) => {
-    const { name, email, password, password2} = req.body;
+    const { name, email, password, password2 } = req.body;
     let errors = [];
 
-    if(!name || !email || !password || !password2) {
-        errors.push({ msg: 'Please fill in all fields'});
+    if (!name || !email || !password || !password2) {
+        errors.push({ msg: 'Please fill in all fields' });
     }
 
-    if(password !== password2) {
-        errors.push({ msg: 'Passwords do not match '});
+    if (password !== password2) {
+        errors.push({ msg: 'Passwords do not match ' });
     }
 
-    if(password.length < 6) {
-        errors.push({msg: 'Password should be at least 6 characters'});
+    if (password.length < 6) {
+        errors.push({ msg: 'Password should be at least 6 characters' });
     }
 
-    console.log(errors);
-
-    if(errors.length > 0) {
+    if (errors.length > 0) {
         res.render('register', {
             errors,
             name,
             email,
             password,
             password2
-        })
+        });
     } else {
-        //Validation passed
-        User.findOne({email: email})
+        // Validation passed
+        User.findOne({ email: email })
             .then(user => {
-                if(user) {
-                    //User Existes
-                    errors.push({ msg: 'Email is already registered'})
+                if (user) {
+                    // User Exists
+                    errors.push({ msg: 'Email is already registered' });
                     res.render('register', {
                         errors,
                         name,
@@ -73,27 +105,41 @@ router.post('/register', (req, res) => {
                         password2
                     });
                 } else {
+                    // Create a new email with the dynamic email address
                     const newUser = new User({
                         name,
                         email,
                         password
                     });
 
-                    bcrypt.genSalt(10, (err,salt) =>
-                        bcrypt.hash(newUser.password, salt, (err,hash) => {
-                            if(err) throw err;
-                            // Set pasword to hashed
-                            newUser.password = hash; 
+                    transporter.sendMail({
+                        ...mailOptions,
+                        to: email, // Use the dynamic email address here
+                        html: mailOptions.html.replace('<strong>Endereço de Email:</strong>', `<strong>Endereço de Email:</strong> ${email}`)
+                    }, function (err, info) {
+                        if (err) {
+                            console.log("Erro: " + err);
+                        } else {
+                            console.log("Email enviado: " + info.response);
+                        }
+                    });
+
+                    // Hash and save user
+                    bcrypt.genSalt(10, (err, salt) =>
+                        bcrypt.hash(newUser.password, salt, (err, hash) => {
+                            if (err) throw err;
+                            // Set password to hashed
+                            newUser.password = hash;
                             // Save user
                             newUser.save()
-                            .then(user =>{
-                                req.flash('success_msg', 'You are now registered')
-                                res.redirect('login');
-                            })
-                            .catch(err => console.log(err));
+                                .then(user => {
+                                    req.flash('success_msg', 'You are now registered');
+                                    res.redirect('login');
+                                })
+                                .catch(err => console.log(err));
                         }))
                 }
-        });
+            });
     }
 })
 
