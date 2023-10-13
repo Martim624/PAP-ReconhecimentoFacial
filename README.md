@@ -56,14 +56,10 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
 YAgeTunes is a project that has several functionalities that can be used for all types of infrastructures, in this case the project consists of choosing and playing automatic music through facial recognition using artificial intelligence. It allows a song to be reproduced depending on age, gender and mood depending on the same data collected.
-
-Use the `BLANK_README.md` to get started.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -75,8 +71,6 @@ Use the `BLANK_README.md` to get started.
 * MongoDB
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- GETTING STARTED -->
 ## Getting Started
