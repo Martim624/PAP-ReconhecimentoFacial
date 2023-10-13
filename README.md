@@ -13,6 +13,8 @@
 <br />
 <div align="center">
 
+  <h3 align="center">Best-README-Template</h3>
+  
   <p align="center">
     Let your face unlock the beat with us!
     <br />
@@ -21,9 +23,8 @@
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    <a href="https://github.com/Martim624/PAP-ReconhecimentoFacial/issues">Report Bug</a>
+    
   </p>
 </div>
 
