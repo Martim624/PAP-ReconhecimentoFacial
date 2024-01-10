@@ -11,14 +11,14 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "xxlordhdxx624@gmail.com",
-    pass: "eeijtawajfifjolp"
+    user: "yagetunes@gmail.com",
+    pass: "qpui cpeq wldl othh"
   }
 })
 
 const mailOptions = {
-    from: "yagetunes@info.pt",
-    to: "xxlordhdxx624@gmail.com",
+    from: "yagetunes@gmail.com",
+    to: "yagetunes@gmail.com",
     subject: "Novo Email Registado",
     html: `
       <html>
@@ -29,7 +29,7 @@ const mailOptions = {
           <p>Aqui estão os detalhes do seu novo email:</p>
           <ul>
             <li><strong>Endereço de Email:</strong> </li>
-            <li><strong>Data de Registo:</strong> 09 de setembro de 2023</li>
+            <li><strong>Data de Registo:</strong></li>
           </ul>
           <p>Por favor, mantenha as suas credenciais em segurança e não as partilhe com ninguém.</p>
           <p>Se tiver alguma dúvida ou precisar de assistência, não hesite em contactar-nos.</p>
@@ -38,6 +38,50 @@ const mailOptions = {
       </html>
     `,
   };
+
+  /*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to YAgeTunes!</title>
+<style>
+  body { font-family: 'Arial', sans-serif; background-color: #f4f4f4; color: #333; }
+  .container { max-width: 600px; margin: 20px auto; padding: 20px; background: #fff; }
+  .logo { text-align: center; margin-bottom: 20px; }
+  .logo img { max-width: 100px; }
+  .content { text-align: center; }
+  .footer { margin-top: 30px; text-align: center; font-size: 0.8em; color: #888; }
+  ul { text-align: left; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <img src="cid:logo" alt="YAgeTunes Logo">
+  </div>
+  <div class="content">
+    <h1>Welcome to YAgeTunes!</h1>
+    <p>Your email has been successfully registered.</p>
+    <p>Thank you for joining us.</p>
+    <p>Here are the details of your new account:</p>
+    <ul>
+      <li><strong>Email Address:</strong></li>
+      <li><strong>Registration Date:</strong></li>
+    </ul>
+    <p>Please keep your credentials secure and do not share them with anyone.</p>
+    <p>If you have any questions or need assistance, do not hesitate to contact us.</p>
+    <p>Thank you!</p>
+  </div>
+  <div class="footer">
+    <p>YAgeTunes Team</p>
+  </div>
+</div>
+</body>
+</html>
+
+*/
   
 const app = express()
 
