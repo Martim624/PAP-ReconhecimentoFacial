@@ -121,6 +121,7 @@ cam.addEventListener("play", async () => {
        });
     }
   }
+  
     setTimeout(() => {
         showInfo("showTotal", `Total of Detections: ${totalDetections}`);
         showInfo("showTotalAges", `Total of Ages: ${totalDetections > 1 ? parseInt(totalAges) : ""}`);
