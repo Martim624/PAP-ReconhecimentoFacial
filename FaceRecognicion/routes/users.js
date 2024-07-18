@@ -1,59 +1,45 @@
+// users.js
+
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs')
-const passport = require('passport')
-const { ensureAuthenticated, ensureAdmin } = require('../config/auth')
-
-
-// Email Controller
+const bcrypt = require('bcryptjs');
+const passport = require('passport');
+const { ensureAuthenticated, ensureAdmin } = require('../config/auth');
+const crypto = require('crypto');
 const nodemailer = require("nodemailer");
+const path = require('path');
+const User = require('../models/User');
 
+// Nodemailer configuration
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "yagetunes@gmail.com",
-    pass: "qpui cpeq wldl othh"
+    user: process.env.EMAIL_USER, // Use environment variables
+    pass: process.env.EMAIL_PASS  // Use environment variables
   }
-})
+});
 
-const mailOptions = {
-    from: "yagetunes@gmail.com",
-    to: "yagetunes@gmail.com",
-    subject: "Novo Email Registado",
-    html: `
-      <html>
-        <body>
-          <h1>Bem-vindo ao YAgeTunes!</h1>
-          <p>O seu email foi registado com sucesso.</p>
-          <p>Agradecemos por se juntar a nós.</p>
-          <p>Aqui estão os detalhes do seu novo email:</p>
-          <ul>
-            <li><strong>Endereço de Email:</strong> </li>
-            <li><strong>Data de Registo:</strong></li>
-          </ul>
-          <p>Por favor, mantenha as suas credenciais em segurança e não as partilhe com ninguém.</p>
-          <p>Se tiver alguma dúvida ou precisar de assistência, não hesite em contactar-nos.</p>
-          <p>Obrigado!</p>
-        </body>
-      </html>
-    `,
-  };
-
-  /*
+// Function to create email template for registration and password reset
+const createEmailTemplate = (title, content) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Welcome to YAgeTunes!</title>
+<title>${title}</title>
 <style>
-  body { font-family: 'Arial', sans-serif; background-color: #f4f4f4; color: #333; }
-  .container { max-width: 600px; margin: 20px auto; padding: 20px; background: #fff; }
+  body { font-family: 'Arial', sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
+  .container { max-width: 600px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
   .logo { text-align: center; margin-bottom: 20px; }
   .logo img { max-width: 100px; }
   .content { text-align: center; }
   .footer { margin-top: 30px; text-align: center; font-size: 0.8em; color: #888; }
-  ul { text-align: left; }
+  ul { text-align: left; list-style-type: none; padding: 0; }
+  li { margin-bottom: 10px; }
+  h1 { color: #333; }
+  p { color: #666; }
+  .social-icons { text-align: center; margin-top: 20px; }
+  .social-icons img { width: 30px; margin: 0 10px; }
 </style>
 </head>
 <body>
@@ -62,190 +48,274 @@ const mailOptions = {
     <img src="cid:logo" alt="YAgeTunes Logo">
   </div>
   <div class="content">
-    <h1>Welcome to YAgeTunes!</h1>
-    <p>Your email has been successfully registered.</p>
-    <p>Thank you for joining us.</p>
-    <p>Here are the details of your new account:</p>
-    <ul>
-      <li><strong>Email Address:</strong></li>
-      <li><strong>Registration Date:</strong></li>
-    </ul>
-    <p>Please keep your credentials secure and do not share them with anyone.</p>
-    <p>If you have any questions or need assistance, do not hesitate to contact us.</p>
-    <p>Thank you!</p>
+    <h1>${title}</h1>
+    <p>${content}</p>
   </div>
   <div class="footer">
     <p>YAgeTunes Team</p>
+    <div class="social-icons">
+      <a href="https://www.instagram.com/YAgetunes" target="_blank">
+        <img src="cid:instagram" alt="Instagram">
+      </a>
+    </div>
   </div>
 </div>
 </body>
 </html>
+`;
 
-*/
-  
-const app = express()
-
-app.use('/assets', express.static('../assets'))
-
-// User model 
-const User = require('../models/User')
-
-// Login model
-router.get('/login',(req, res ) => res.render('login'))
-
-// Register model
-router.get('/register',(req, res ) => res.render('register'))
-
-// Cam model
-router.get('/cam', ensureAuthenticated, (req, res) => {
-    res.render("cam.ejs")
-})
-
-// Admin model
-router.get('/admin', ensureAdmin,  (req, res) => {
-    User.find().then(users => {
-            res.render('admin.ejs', { "users": users });
-    })
+// Email options function
+const mailOptions = (email, subject, htmlContent) => ({
+  from: process.env.EMAIL_USER, // Use environment variables
+  to: email,
+  subject: subject,
+  html: htmlContent,
+  attachments: [
+    {
+      filename: 'logo.png',
+      path: path.join(__dirname, '../assets/img/logo.png'),
+      cid: 'logo'
+    },
+    {
+      filename: 'instagram.png',
+      path: path.join(__dirname, '../assets/img/instagram.png'),
+      cid: 'instagram'
+    }
+  ]
 });
 
+// Login model
+router.get('/login', (req, res) => res.render('login'));
+
+// Register model
+router.get('/register', (req, res) => res.render('register'));
+
+// CAM model
+router.get('/cam', ensureAuthenticated, (req, res) => {
+  res.render("cam.ejs");
+});
+
+// Admin model
+router.get('/admin', ensureAdmin, (req, res) => {
+  User.find().then(users => {
+    res.render('admin.ejs', { "users": users });
+  }).catch(err => {
+    console.log(err);
+    req.flash('error_msg', 'Error fetching users');
+    res.redirect('/users/login');
+  });
+});
 
 // Register Handle
 router.post('/register', (req, res) => {
-    const { name, email, password, password2 } = req.body;
-    let errors = [];
+  const { name, email, password, password2 } = req.body;
+  let errors = [];
 
-    if (!name || !email || !password || !password2) {
-        errors.push({ msg: 'Please fill in all fields' });
-    }
+  if (!name || !email || !password || !password2) {
+    errors.push({ msg: 'Please fill in all fields' });
+  }
 
-    if (password !== password2) {
-        errors.push({ msg: 'Passwords do not match ' });
-    }
+  if (password !== password2) {
+    errors.push({ msg: 'Passwords do not match' });
+  }
 
-    if (password.length < 6) {
-        errors.push({ msg: 'Password should be at least 6 characters' });
-    }
+  if (password.length < 6) {
+    errors.push({ msg: 'Password should be at least 6 characters' });
+  }
 
-    if (errors.length > 0) {
-        res.render('register', {
-            errors,
+  if (errors.length > 0) {
+    res.render('register', { errors, name, email, password, password2 });
+  } else {
+    User.findOne({ email: email })
+      .then(user => {
+        if (user) {
+          errors.push({ msg: 'Email is already registered' });
+          res.render('register', { errors, name, email, password, password2 });
+        } else {
+          const newUser = new User({
             name,
             email,
-            password,
-            password2
-        });
-    } else {
-        // Validation passed
-        User.findOne({ email: email })
-            .then(user => {
-                if (user) {
-                    // User Exists
-                    errors.push({ msg: 'Email is already registered' });
-                    res.render('register', {
-                        errors,
-                        name,
-                        email,
-                        password,
-                        password2
-                    });
-                } else {
-                    // Create a new email with the dynamic email address
-                    const newUser = new User({
-                        name,
-                        email,
-                        password
-                    });
+            password
+          });
 
-                    transporter.sendMail({
-                        ...mailOptions,
-                        to: email, // Use the dynamic email address here
-                        html: mailOptions.html.replace('<strong>Endereço de Email:</strong>', `<strong>Endereço de Email:</strong> ${email}`)
-                    }, function (err, info) {
-                        if (err) {
-                            console.log("Erro: " + err);
-                        } else {
-                            console.log("Email enviado: " + info.response);
-                        }
-                    });
+          bcrypt.genSalt(10, (err, salt) =>
+            bcrypt.hash(newUser.password, salt, (err, hash) => {
+              if (err) throw err;
+              newUser.password = hash;
+              newUser.save()
+                .then(user => {
+                  const subject = 'Welcome to YAgeTunes!';
+                  const htmlContent = createEmailTemplate(subject, `
+                    Your email has been successfully registered.
+                    Thank you for joining us.
+                    Here are the details of your new account:
+                    <br><br>
+                    <ul>
+                      <li><strong>Email Address:</strong> ${email}</li>
+                      <li><strong>Registration Date:</strong> ${new Date().toLocaleDateString()}</li>
+                    </ul>
+                    <p>Please keep your credentials secure and do not share them with anyone.</p>
+                    <p>If you have any questions or need assistance, do not hesitate to contact us.</p>
+                    <p>Thank you!</p>
+                  `);
 
-                    // Hash and save user
-                    bcrypt.genSalt(10, (err, salt) =>
-                        bcrypt.hash(newUser.password, salt, (err, hash) => {
-                            if (err) throw err;
-                            // Set password to hashed
-                            newUser.password = hash;
-                            // Save user
-                            newUser.save()
-                                .then(user => {
-                                    req.flash('success_msg', 'You are now registered');
-                                    res.redirect('login');
-                                })
-                                .catch(err => console.log(err));
-                        }))
-                }
-            });
-    }
-})
+                  transporter.sendMail(mailOptions(email, subject, htmlContent), (err, info) => {
+                    if (err) {
+                      console.log("Error sending email: " + err);
+                      req.flash('error_msg', 'Error sending registration email');
+                      res.redirect('/users/register');
+                    } else {
+                      console.log("Email sent: " + info.response);
+                      req.flash('success_msg', 'You are now registered and can log in');
+                      res.redirect('/users/login');
+                    }
+                  });
+                })
+                .catch(err => console.log(err));
+            }));
+        }
+      });
+  }
+});
 
 // Login Handle
 router.post('/login', (req, res, next) => {
-    passport.authenticate('local', {
-      successRedirect: '/users/cam',
-      failureRedirect: '/users/login',
-      failureFlash: true
-    })(req, res, next);
-  });
-
-// Login Admin Handle
-  router.post('/admin', (req, res, next) => {
-    passport.authenticate('local', {
-        successRedirect: '/admin',
-        failureRedirect: '/backoffice',
-        failureFlash: true
-      })(req, res, next);
-    /*
-    passport.authenticate('local', (err, user, info) => {
-        if (err) {
-            // Handle error
-            req.flash('error_msg', 'An error occurred during authentication: ' + err);
-            return next(err);
-        }
-
-        if (!user) {
-            // Authentication failed
-            req.flash('error_msg', 'Invalid credentials. Please try again.');
-            return res.redirect('/backoffice');
-        }
-
-        // Check if the user has the role of admin
-        if (user.role === 'admin') {
-            // User is an admin, redirect to the admin page
-            return res.redirect('/admin');
-        }
-
-        // User is not an admin, redirect to another page or show an error message
-        req.flash('error_msg', 'You are not authorized to access the admin page.');
-        return res.redirect('/backoffice');
-    })(req, res, next);*/
-
-
+  passport.authenticate('local', {
+    successRedirect: '/users/cam',
+    failureRedirect: '/users/login',
+    failureFlash: true
+  })(req, res, next);
 });
 
 // Logout Handle
-router.get('/logout', function(req, res, next) {
-    req.logout(function(err) {
-      if (err) { return next(err); }
-      req.flash('success_msg', 'You are logged out!')
-      res.redirect('/users/login');
+router.get('/logout', (req, res) => {
+  req.logout();
+  req.flash('success_msg', 'You are logged out');
+  res.redirect('/users/login');
+});
+
+// Forgot Password Form
+router.get('/forgot-password', (req, res) => {
+  res.render('forgot-password');
+});
+
+// Process Forgot Password Form
+router.post('/forgot-password', (req, res) => {
+  const { email } = req.body;
+
+  User.findOne({ email: email })
+    .then(user => {
+      if (!user) {
+        req.flash('error_msg', 'Email not registered');
+        return res.redirect('/users/forgot-password');
+      }
+
+      const token = crypto.randomBytes(20).toString('hex');
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+      user.save().then(() => {
+        const subject = 'Password Reset Instructions';
+        const htmlContent = createEmailTemplate(subject, `
+          We have received a request to reset your password.
+          To reset your password, please click on the following link:
+          <br><br>
+          <a href="${req.headers.host}/users/reset-password/${token}" style="background-color: #4CAF50; color: white; padding: 15px 25px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">Reset Password</a>
+          <br><br>
+          If you did not request this, please ignore this email.
+        `);
+
+        transporter.sendMail(mailOptions(email, subject, htmlContent), (err, info) => {
+          if (err) {
+            console.log("Error sending email: " + err);
+            req.flash('error_msg', 'Error sending password reset email');
+            return res.redirect('/users/forgot-password');
+          }
+          console.log("Email sent: " + info.response);
+          req.flash('success_msg', 'Password reset instructions sent');
+          res.redirect('/users/login');
+        });
+      }).catch(err => {
+        console.log(err);
+        req.flash('error_msg', 'Error processing request');
+        res.redirect('/users/forgot-password');
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      req.flash('error_msg', 'Error processing request');
+      res.redirect('/users/forgot-password');
     });
 });
 
-// Logout Admin Handle
-router.get('/logoutAdmin', function(req, res, next) {
-    req.logout(function(err) {
-      if (err) { return next(err); }
-      req.flash('success_msg', 'You are logged out!')
-      res.redirect('/backoffice');
+// Reset Password Form
+router.get('/reset-password/:token', (req, res) => {
+  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } })
+    .then(user => {
+      if (!user) {
+        req.flash('error_msg', 'Password reset token is invalid or has expired');
+        return res.redirect('/users/forgot-password');
+      }
+      res.render('reset-password', { token: req.params.token });
+    })
+    .catch(err => {
+      console.log(err);
+      req.flash('error_msg', 'Error finding user');
+      res.redirect('/users/forgot-password');
+    });
+});
+
+// Process Reset Password Form
+router.post('/reset-password/:token', (req, res) => {
+  const { token } = req.params;
+  const { password, password2 } = req.body;
+
+  User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
+    .then(user => {
+      if (!user) {
+        req.flash('error_msg', 'Password reset token is invalid or has expired');
+        return res.redirect('/users/forgot-password');
+      }
+
+      let errors = [];
+      if (!password || !password2) {
+        errors.push({ msg: 'Please fill in all fields' });
+      }
+      if (password !== password2) {
+        errors.push({ msg: 'Passwords do not match' });
+      }
+      if (password.length < 6) {
+        errors.push({ msg: 'Password should be at least 6 characters' });
+      }
+
+      if (errors.length > 0) {
+        return res.render('reset-password', { errors, token });
+      } else {
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(password, salt, (err, hash) => {
+            if (err) throw err;
+            user.password = hash;
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+
+            user.save()
+              .then(() => {
+                req.flash('success_msg', 'Password reset successfully');
+                res.redirect('/users/login');
+              })
+              .catch(err => {
+                console.log(err);
+                req.flash('error_msg', 'Error resetting password');
+                res.redirect(`/users/reset-password/${token}`);
+              });
+          });
+        });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      req.flash('error_msg', 'Error processing request');
+      res.redirect('/users/forgot-password');
     });
 });
 
