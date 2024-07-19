@@ -1,21 +1,19 @@
-// users.js
-
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const { ensureAuthenticated, ensureAdmin } = require('../config/auth');
 const crypto = require('crypto');
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 const path = require('path');
 const User = require('../models/User');
 
 // Nodemailer configuration
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER, // Use environment variables
-    pass: process.env.EMAIL_PASS  // Use environment variables
+    user: 'yagetunes@gmail.com',
+    pass: 'qpui cpeq wldl othh' // Note: Consider using environment variables for sensitive data
   }
 });
 
@@ -66,7 +64,7 @@ const createEmailTemplate = (title, content) => `
 
 // Email options function
 const mailOptions = (email, subject, htmlContent) => ({
-  from: process.env.EMAIL_USER, // Use environment variables
+  from: 'yagetunes@gmail.com',
   to: email,
   subject: subject,
   html: htmlContent,
@@ -98,7 +96,7 @@ router.get('/cam', ensureAuthenticated, (req, res) => {
 // Admin model
 router.get('/admin', ensureAdmin, (req, res) => {
   User.find().then(users => {
-    res.render('admin.ejs', { "users": users });
+    res.render('admin.ejs', { users: users });
   }).catch(err => {
     console.log(err);
     req.flash('error_msg', 'Error fetching users');
@@ -220,7 +218,7 @@ router.post('/forgot-password', (req, res) => {
           We have received a request to reset your password.
           To reset your password, please click on the following link:
           <br><br>
-          <a href="${req.headers.host}/users/reset-password/${token}" style="background-color: #4CAF50; color: white; padding: 15px 25px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">Reset Password</a>
+          <a href="http://${req.headers.host}/users/reset-password/${email}?token=${token}" style="background-color: #4CAF50; color: white; padding: 15px 25px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">Reset Password</a>
           <br><br>
           If you did not request this, please ignore this email.
         `);
@@ -249,14 +247,21 @@ router.post('/forgot-password', (req, res) => {
 });
 
 // Reset Password Form
-router.get('/reset-password/:token', (req, res) => {
-  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } })
+router.get('/reset-password/:email', (req, res) => {
+  const { email } = req.params;
+  const { token } = req.query;
+
+  console.log("Reset Password Route Hit");
+  console.log("Email:", email);
+  console.log("Token:", token);
+
+  User.findOne({ email: email, resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
     .then(user => {
       if (!user) {
         req.flash('error_msg', 'Password reset token is invalid or has expired');
         return res.redirect('/users/forgot-password');
       }
-      res.render('reset-password', { token: req.params.token });
+      res.render('reset-password', { email, token });
     })
     .catch(err => {
       console.log(err);
@@ -266,11 +271,10 @@ router.get('/reset-password/:token', (req, res) => {
 });
 
 // Process Reset Password Form
-router.post('/reset-password/:token', (req, res) => {
-  const { token } = req.params;
-  const { password, password2 } = req.body;
+router.post('/reset-password', (req, res) => {
+  const { email, token, password, password2 } = req.body;
 
-  User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
+  User.findOne({ email: email, resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
     .then(user => {
       if (!user) {
         req.flash('error_msg', 'Password reset token is invalid or has expired');
@@ -289,7 +293,7 @@ router.post('/reset-password/:token', (req, res) => {
       }
 
       if (errors.length > 0) {
-        return res.render('reset-password', { errors, token });
+        return res.render('reset-password', { errors, email, token });
       } else {
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(password, salt, (err, hash) => {
@@ -306,7 +310,7 @@ router.post('/reset-password/:token', (req, res) => {
               .catch(err => {
                 console.log(err);
                 req.flash('error_msg', 'Error resetting password');
-                res.redirect(`/users/reset-password/${token}`);
+                res.redirect(`/users/reset-password/${email}?token=${token}`);
               });
           });
         });
