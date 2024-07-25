@@ -256,71 +256,80 @@ router.get('/reset-password/:email', (req, res) => {
   console.log("Token:", token);
 
   User.findOne({ email: email, resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
-    .then(user => {
-      if (!user) {
-        req.flash('error_msg', 'Password reset token is invalid or has expired');
-        return res.redirect('/users/forgot-password');
-      }
-      res.render('reset-password', { email, token });
-    })
-    .catch(err => {
-      console.log(err);
-      req.flash('error_msg', 'Error finding user');
-      res.redirect('/users/forgot-password');
-    });
+      .then(user => {
+          if (!user) {
+              console.log("No user found or token expired");
+              req.flash('error_msg', 'Password reset token is invalid or has expired');
+              return res.redirect('/users/forgot-password');
+          }
+          // Log user details
+          console.log("User found:", user);
+          // Render the reset password form with the email, token, and errors array
+          res.render('reset-password', { email, token, errors: [] });
+      })
+      .catch(err => {
+          console.log("Error finding user:", err);
+          req.flash('error_msg', 'Error finding user');
+          res.redirect('/users/forgot-password');
+      });
 });
 
 // Process Reset Password Form
 router.post('/reset-password', (req, res) => {
   const { email, token, password, password2 } = req.body;
 
+  console.log("Reset Password POST Request Received");
+  console.log(req.body); // Debug: log the form data to ensure it's correct
+
   User.findOne({ email: email, resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
-    .then(user => {
-      if (!user) {
-        req.flash('error_msg', 'Password reset token is invalid or has expired');
-        return res.redirect('/users/forgot-password');
-      }
+      .then(user => {
+          if (!user) {
+              console.log("No user found or token expired in POST request");
+              req.flash('error_msg', 'Password reset token is invalid or has expired');
+              return res.redirect('/users/forgot-password');
+          }
 
-      let errors = [];
-      if (!password || !password2) {
-        errors.push({ msg: 'Please fill in all fields' });
-      }
-      if (password !== password2) {
-        errors.push({ msg: 'Passwords do not match' });
-      }
-      if (password.length < 6) {
-        errors.push({ msg: 'Password should be at least 6 characters' });
-      }
+          let errors = [];
+          if (!password || !password2) {
+              errors.push({ msg: 'Please fill in all fields' });
+          }
+          if (password !== password2) {
+              errors.push({ msg: 'Passwords do not match' });
+          }
+          if (password.length < 6) {
+              errors.push({ msg: 'Password should be at least 6 characters' });
+          }
 
-      if (errors.length > 0) {
-        return res.render('reset-password', { errors, email, token });
-      } else {
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(password, salt, (err, hash) => {
-            if (err) throw err;
-            user.password = hash;
-            user.resetPasswordToken = undefined;
-            user.resetPasswordExpires = undefined;
+          if (errors.length > 0) {
+              return res.render('reset-password', { errors, email, token });
+          } else {
+              bcrypt.genSalt(10, (err, salt) => {
+                  bcrypt.hash(password, salt, (err, hash) => {
+                      if (err) throw err;
+                      user.password = hash;
+                      user.resetPasswordToken = undefined;
+                      user.resetPasswordExpires = undefined;
 
-            user.save()
-              .then(() => {
-                req.flash('success_msg', 'Password reset successfully');
-                res.redirect('/users/login');
-              })
-              .catch(err => {
-                console.log(err);
-                req.flash('error_msg', 'Error resetting password');
-                res.redirect(`/users/reset-password/${email}?token=${token}`);
+                      user.save()
+                          .then(() => {
+                              console.log("Password reset successfully");
+                              req.flash('success_msg', 'Password reset successfully');
+                              res.redirect('/users/login');
+                          })
+                          .catch(err => {
+                              console.log("Error saving user after password reset:", err);
+                              req.flash('error_msg', 'Error resetting password');
+                              res.redirect(`/users/reset-password/${email}?token=${token}`);
+                          });
+                  });
               });
-          });
-        });
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      req.flash('error_msg', 'Error processing request');
-      res.redirect('/users/forgot-password');
-    });
+          }
+      })
+      .catch(err => {
+          console.log("Error processing reset password request:", err);
+          req.flash('error_msg', 'Error processing request');
+          res.redirect('/users/forgot-password');
+      });
 });
 
 module.exports = router;

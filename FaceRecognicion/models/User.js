@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// User Modal
+// User Schema
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -20,8 +20,14 @@ const UserSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],   
+        enum: ['user', 'admin'],
         default: 'user'
+    },
+    resetPasswordToken: {
+        type: String,
+    },
+    resetPasswordExpires: {
+        type: Date,
     }
 });
 
