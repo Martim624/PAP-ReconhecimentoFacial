@@ -5,6 +5,8 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require("passport");
 const PORT = process.env.PORT || 3001;
+const path = require('path');
+
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set("layout", false);
 app.use('/assets', express.static('assets'));
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Bodyparser

@@ -186,10 +186,12 @@ router.post('/login', (req, res, next) => {
 });
 
 // Logout Handle
-router.get('/logout', (req, res) => {
-  req.logout();
-  req.flash('success_msg', 'You are logged out');
-  res.redirect('/users/login');
+router.get('/logout', (req, res, next) => {
+  req.logout((err) => {
+      if (err) { return next(err); }
+      req.flash('success_msg', 'You are logged out');
+      res.redirect('/users/login');
+  });
 });
 
 // Forgot Password Form
@@ -262,9 +264,7 @@ router.get('/reset-password/:email', (req, res) => {
               req.flash('error_msg', 'Password reset token is invalid or has expired');
               return res.redirect('/users/forgot-password');
           }
-          // Log user details
           console.log("User found:", user);
-          // Render the reset password form with the email, token, and errors array
           res.render('reset-password', { email, token, errors: [] });
       })
       .catch(err => {
@@ -272,14 +272,11 @@ router.get('/reset-password/:email', (req, res) => {
           req.flash('error_msg', 'Error finding user');
           res.redirect('/users/forgot-password');
       });
-});
-
-// Process Reset Password Form
-router.post('/reset-password', (req, res) => {
+});router.post('/reset-password', (req, res) => {
   const { email, token, password, password2 } = req.body;
 
   console.log("Reset Password POST Request Received");
-  console.log(req.body); // Debug: log the form data to ensure it's correct
+  console.log(req.body);
 
   User.findOne({ email: email, resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
       .then(user => {
