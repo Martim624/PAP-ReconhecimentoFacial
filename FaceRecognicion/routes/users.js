@@ -4,11 +4,17 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const { ensureAuthenticated, ensureAdmin } = require('../config/auth');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const path = require('path');
-const User = require('../models/User');
+const nodemailer = require("nodemailer");
 
-// Nodemailer configuration
+const app = express()
+
+app.use('/assets', express.static('../assets'))
+
+// User model 
+const User = require('../models/User')
+
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -82,116 +88,164 @@ const mailOptions = (email, subject, htmlContent) => ({
   ]
 });
 
+
 // Login model
-router.get('/login', (req, res) => res.render('login'));
+router.get('/login',(req, res ) => res.render('login'))
 
 // Register model
-router.get('/register', (req, res) => res.render('register'));
+router.get('/register',(req, res ) => res.render('register'))
 
-// CAM model
+// Cam model
 router.get('/cam', ensureAuthenticated, (req, res) => {
-  res.render("cam.ejs");
-});
+    res.render("cam.ejs")
+})
 
 // Admin model
-router.get('/admin', ensureAdmin, (req, res) => {
-  User.find().then(users => {
-    res.render('admin.ejs', { users: users });
-  }).catch(err => {
-    console.log(err);
-    req.flash('error_msg', 'Error fetching users');
-    res.redirect('/users/login');
-  });
+router.get('/admin', ensureAdmin,  (req, res) => {
+    User.find().then(users => {
+            res.render('admin.ejs', { "users": users });
+    })
 });
+
 
 // Register Handle
 router.post('/register', (req, res) => {
-  const { name, email, password, password2 } = req.body;
-  let errors = [];
+    const { name, email, password, password2 } = req.body;
+    let errors = [];
 
-  if (!name || !email || !password || !password2) {
-    errors.push({ msg: 'Please fill in all fields' });
-  }
+    if (!name || !email || !password || !password2) {
+        errors.push({ msg: 'Please fill in all fields' });
+    }
 
-  if (password !== password2) {
-    errors.push({ msg: 'Passwords do not match' });
-  }
+    if (password !== password2) {
+        errors.push({ msg: 'Passwords do not match ' });
+    }
 
-  if (password.length < 6) {
-    errors.push({ msg: 'Password should be at least 6 characters' });
-  }
+    if (password.length < 6) {
+        errors.push({ msg: 'Password should be at least 6 characters' });
+    }
 
-  if (errors.length > 0) {
-    res.render('register', { errors, name, email, password, password2 });
-  } else {
-    User.findOne({ email: email })
-      .then(user => {
-        if (user) {
-          errors.push({ msg: 'Email is already registered' });
-          res.render('register', { errors, name, email, password, password2 });
-        } else {
-          const newUser = new User({
+    if (errors.length > 0) {
+        res.render('register', {
+            errors,
             name,
             email,
-            password
-          });
+            password,
+            password2
+        });
+    } else {
+        // Validation passed
+        User.findOne({ email: email })
+            .then(user => {
+                if (user) {
+                    // User Exists
+                    errors.push({ msg: 'Email is already registered' });
+                    res.render('register', {
+                        errors,
+                        name,
+                        email,
+                        password,
+                        password2
+                    });
+                } else {
+                    // Create a new email with the dynamic email address
+                    const newUser = new User({
+                        name,
+                        email,
+                        password
+                    });
 
-          bcrypt.genSalt(10, (err, salt) =>
-            bcrypt.hash(newUser.password, salt, (err, hash) => {
-              if (err) throw err;
-              newUser.password = hash;
-              newUser.save()
-                .then(user => {
-                  const subject = 'Welcome to YAgeTunes!';
-                  const htmlContent = createEmailTemplate(subject, `
-                    Your email has been successfully registered.
-                    Thank you for joining us.
-                    Here are the details of your new account:
-                    <br><br>
-                    <ul>
-                      <li><strong>Email Address:</strong> ${email}</li>
-                      <li><strong>Registration Date:</strong> ${new Date().toLocaleDateString()}</li>
-                    </ul>
-                    <p>Please keep your credentials secure and do not share them with anyone.</p>
-                    <p>If you have any questions or need assistance, do not hesitate to contact us.</p>
-                    <p>Thank you!</p>
-                  `);
+                    transporter.sendMail({
+                        ...mailOptions,
+                        to: email, // Use the dynamic email address here
+                        html: mailOptions.html.replace('<strong>Endereço de Email:</strong>', `<strong>Endereço de Email:</strong> ${email}`)
+                    }, function (err, info) {
+                        if (err) {
+                            console.log("Erro: " + err);
+                        } else {
+                            console.log("Email enviado: " + info.response);
+                        }
+                    });
 
-                  transporter.sendMail(mailOptions(email, subject, htmlContent), (err, info) => {
-                    if (err) {
-                      console.log("Error sending email: " + err);
-                      req.flash('error_msg', 'Error sending registration email');
-                      res.redirect('/users/register');
-                    } else {
-                      console.log("Email sent: " + info.response);
-                      req.flash('success_msg', 'You are now registered and can log in');
-                      res.redirect('/users/login');
-                    }
-                  });
-                })
-                .catch(err => console.log(err));
-            }));
-        }
-      });
-  }
-});
+                    // Hash and save user
+                    bcrypt.genSalt(10, (err, salt) =>
+                        bcrypt.hash(newUser.password, salt, (err, hash) => {
+                            if (err) throw err;
+                            // Set password to hashed
+                            newUser.password = hash;
+                            // Save user
+                            newUser.save()
+                                .then(user => {
+                                    req.flash('success_msg', 'You are now registered');
+                                    res.redirect('login');
+                                })
+                                .catch(err => console.log(err));
+                        }))
+                }
+            });
+    }
+})
 
 // Login Handle
 router.post('/login', (req, res, next) => {
-  passport.authenticate('local', {
-    successRedirect: '/users/cam',
-    failureRedirect: '/users/login',
-    failureFlash: true
-  })(req, res, next);
+    passport.authenticate('local', {
+      successRedirect: '/users/cam',
+      failureRedirect: '/users/login',
+      failureFlash: true
+    })(req, res, next);
+  });
+
+// Login Admin Handle
+  router.post('/admin', (req, res, next) => {
+    passport.authenticate('local', {
+        successRedirect: '/admin',
+        failureRedirect: '/backoffice',
+        failureFlash: true
+      })(req, res, next);
+    /*
+    passport.authenticate('local', (err, user, info) => {
+        if (err) {
+            // Handle error
+            req.flash('error_msg', 'An error occurred during authentication: ' + err);
+            return next(err);
+        }
+
+        if (!user) {
+            // Authentication failed
+            req.flash('error_msg', 'Invalid credentials. Please try again.');
+            return res.redirect('/backoffice');
+        }
+
+        // Check if the user has the role of admin
+        if (user.role === 'admin') {
+            // User is an admin, redirect to the admin page
+            return res.redirect('/admin');
+        }
+
+        // User is not an admin, redirect to another page or show an error message
+        req.flash('error_msg', 'You are not authorized to access the admin page.');
+        return res.redirect('/backoffice');
+    })(req, res, next);*/
+
+
 });
 
 // Logout Handle
-router.get('/logout', (req, res, next) => {
-  req.logout((err) => {
+router.get('/logout', function(req, res, next) {
+    req.logout(function(err) {
       if (err) { return next(err); }
-      req.flash('success_msg', 'You are logged out');
+      req.flash('success_msg', 'You are logged out!')
       res.redirect('/users/login');
-  });
+    });
+});
+
+// Logout Admin Handle
+router.get('/logoutAdmin', function(req, res, next) {
+    req.logout(function(err) {
+      if (err) { return next(err); }
+      req.flash('success_msg', 'You are logged out!')
+      res.redirect('/backoffice');
+    });
 });
 
 // Forgot Password Form
@@ -253,18 +307,12 @@ router.get('/reset-password/:email', (req, res) => {
   const { email } = req.params;
   const { token } = req.query;
 
-  console.log("Reset Password Route Hit");
-  console.log("Email:", email);
-  console.log("Token:", token);
-
   User.findOne({ email: email, resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
       .then(user => {
           if (!user) {
-              console.log("No user found or token expired");
               req.flash('error_msg', 'Password reset token is invalid or has expired');
               return res.redirect('/users/forgot-password');
           }
-          console.log("User found:", user);
           res.render('reset-password', { email, token, errors: [] });
       })
       .catch(err => {
@@ -272,16 +320,14 @@ router.get('/reset-password/:email', (req, res) => {
           req.flash('error_msg', 'Error finding user');
           res.redirect('/users/forgot-password');
       });
-});router.post('/reset-password', (req, res) => {
-  const { email, token, password, password2 } = req.body;
+});
 
-  console.log("Reset Password POST Request Received");
-  console.log(req.body);
+router.post('/reset-password', (req, res) => {
+  const { email, token, password, password2 } = req.body;
 
   User.findOne({ email: email, resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
       .then(user => {
           if (!user) {
-              console.log("No user found or token expired in POST request");
               req.flash('error_msg', 'Password reset token is invalid or has expired');
               return res.redirect('/users/forgot-password');
           }
@@ -309,7 +355,6 @@ router.get('/reset-password/:email', (req, res) => {
 
                       user.save()
                           .then(() => {
-                              console.log("Password reset successfully");
                               req.flash('success_msg', 'Password reset successfully');
                               res.redirect('/users/login');
                           })
@@ -328,5 +373,4 @@ router.get('/reset-password/:email', (req, res) => {
           res.redirect('/users/forgot-password');
       });
 });
-
 module.exports = router;
