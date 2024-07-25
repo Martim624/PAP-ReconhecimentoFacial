@@ -92,6 +92,7 @@ const mailOptions = (email, subject, htmlContent) => ({
 // Login model
 router.get('/login',(req, res ) => res.render('login'))
 
+
 // Register model
 router.get('/register',(req, res ) => res.render('register'))
 
@@ -99,6 +100,8 @@ router.get('/register',(req, res ) => res.render('register'))
 router.get('/cam', ensureAuthenticated, (req, res) => {
     res.render("cam.ejs")
 })
+
+router.get('/terms-conditions',(req, res ) => res.render('terms-conditions.ejs'))
 
 // Admin model
 router.get('/admin', ensureAdmin,  (req, res) => {
@@ -373,4 +376,5 @@ router.post('/reset-password', (req, res) => {
           res.redirect('/users/forgot-password');
       });
 });
+
 module.exports = router;

@@ -9,6 +9,8 @@ router.get('/', (req, res) => res.render('index'));
 
 router.get('/backoffice', (req, res) => res.render('backoffice', { layout: 'layout' }));
 
+router.get('/terms-conditions', (req, res) => res.render('terms-conditions.ejs'));
+
 
 router.get('/admin', ensureAdmin, (req, res) => {
   User.find().then(users => {
