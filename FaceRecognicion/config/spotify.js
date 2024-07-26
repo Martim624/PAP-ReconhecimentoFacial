@@ -1,8 +1,8 @@
 const SpotifyWebApi = require('spotify-web-api-node');
 
 const spotifyApi = new SpotifyWebApi({
-  clientId: 'YOUR_SPOTIFY_CLIENT_ID',
-  clientSecret: 'YOUR_SPOTIFY_CLIENT_SECRET',
+  clientId: '6ea2ece7cf9847cc8268106a461d2b56',
+  clientSecret: '03e921ce53684732bcc11bbb328e520c',
 });
 
 const authenticateSpotify = async () => {
@@ -19,6 +19,6 @@ const authenticateSpotify = async () => {
 authenticateSpotify();
 
 // Re-authenticate when token expires
-setInterval(authenticateSpotify, 3600 * 1000); // Token expires in 1 hour
+setInterval(authenticateSpotify, 3600 * 1000);
 
 module.exports = spotifyApi;

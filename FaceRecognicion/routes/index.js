@@ -10,11 +10,11 @@ router.get('/getTrack', async (req, res) => {
 
   let playlistId;
   if (age < 23) {
-    playlistId = 'PLAYLIST_ID_FOR_YOUNGER_THAN_23';
+    playlistId = 'https://open.spotify.com/playlist/3ZynkCm6mqjnsqaGui6QJ4?si=f3f04b6ec74b48fa';
   } else if (age < 33) {
-    playlistId = 'PLAYLIST_ID_FOR_23_TO_33';
+    playlistId = 'https://open.spotify.com/playlist/4dBitGBNmxdfoBB3LLl5jc?si=37fbe3ae5447411c';
   } else {
-    playlistId = 'PLAYLIST_ID_FOR_OLDER_THAN_33';
+    playlistId = 'https://open.spotify.com/playlist/3ZynkCm6mqjnsqaGui6QJ4?si=82d0d94350714ca8';
   }
 
   try {
