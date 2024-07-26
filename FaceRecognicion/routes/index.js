@@ -3,6 +3,29 @@ const router = express.Router();
 const { ensureAuthenticated, ensureAuthenticatedAdmin, ensureAdmin } = require('../config/auth');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs')
+const spotifyApi = require('../config/spotify');
+
+router.get('/getTrack', async (req, res) => {
+  const age = parseInt(req.query.age, 10);
+
+  let playlistId;
+  if (age < 23) {
+    playlistId = 'PLAYLIST_ID_FOR_YOUNGER_THAN_23';
+  } else if (age < 33) {
+    playlistId = 'PLAYLIST_ID_FOR_23_TO_33';
+  } else {
+    playlistId = 'PLAYLIST_ID_FOR_OLDER_THAN_33';
+  }
+
+  try {
+    const data = await spotifyApi.getPlaylistTracks(playlistId, { limit: 1, offset: Math.floor(Math.random() * 50) });
+    const track = data.body.items[0].track;
+    res.json({ url: track.external_urls.spotify });
+  } catch (err) {
+    console.error('Error fetching track from Spotify:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 
 router.get('/', (req, res) => res.render('index'));
