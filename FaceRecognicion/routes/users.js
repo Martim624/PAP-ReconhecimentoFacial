@@ -158,18 +158,21 @@ router.post('/register', (req, res) => {
                         password
                     });
 
-                    transporter.sendMail({
-                        ...mailOptions,
-                        to: email, // Use the dynamic email address here
-                        html: mailOptions.html.replace('<strong>Endereço de Email:</strong>', `<strong>Endereço de Email:</strong> ${email}`)
-                    }, function (err, info) {
-                        if (err) {
-                            console.log("Erro: " + err);
-                        } else {
-                            console.log("Email enviado: " + info.response);
-                        }
-                    });
-
+                    if (!mailOptions || !mailOptions.html) {
+                      console.log("Error: mailOptions or mailOptions.html is undefined");
+                  } else {
+                      transporter.sendMail({
+                          ...mailOptions,
+                          to: email, // Use the dynamic email address here
+                          html: mailOptions.html.replace('<strong>Endereço de Email:</strong>', `<strong>Endereço de Email:</strong> ${email}`)
+                      }, function (err, info) {
+                          if (err) {
+                              console.log("Erro: " + err);
+                          } else {
+                              console.log("Email enviado: " + info.response);
+                          }
+                      });
+                  }
                     // Hash and save user
                     bcrypt.genSalt(10, (err, salt) =>
                         bcrypt.hash(newUser.password, salt, (err, hash) => {
