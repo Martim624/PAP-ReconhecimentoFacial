@@ -13,7 +13,7 @@
 <br />
 <div align="center">
 
-  <h3 align="center">YAgeTunes</h3>
+  <h3 align="center">Mood Beats</h3>
   
   <p align="center">
     Let your face unlock the beat with us!
@@ -59,7 +59,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-YAgeTunes is a project that has several functionalities that can be used for all types of infrastructures, in this case the project consists of choosing and playing automatic music through facial recognition using artificial intelligence. It allows a song to be reproduced depending on age, gender and mood depending on the same data collected.
+Mood Beats is a project that has several functionalities that can be used for all types of infrastructures, in this case the project consists of choosing and playing automatic music through facial recognition using artificial intelligence. It allows a song to be reproduced depending on age, gender and mood depending on the same data collected.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
