@@ -1,6 +1,6 @@
 const cam = document.getElementById("cam");
 const music = document.getElementById("myAudio");
-const video = document.getElementById("hero");
+const video = document.getElementById("hero")
 music.volume = 0.25;
 
 const startVideo = () => {
@@ -91,18 +91,36 @@ cam.addEventListener("play", async () => {
 
     avarageAges = parseInt(totalAges / totalDetections, 10);
 
-    if (avarageAges !== 0) {
-      const response = await fetch(`http://localhost:3000/getTrack?age=${avarageAges}`);
-      const data = await response.json();
-      const source = document.createElement("source");
-      source.src = data.url;
-      music.appendChild(source);
-      music.play();
-      music.addEventListener('ended', function() {
+    if(avarageAges !== 0) {
+      if (avarageAges < 23) {
+        const source = document.createElement("source");
+        source.src = "/assets/music/song4.mp3"
+        music.appendChild(source);
+        music.play();
+        music.addEventListener('ended', function() {
         music.pause();
         source.remove();
-      });
+        });
+      } else if(avarageAges < 33){
+        const source = document.createElement("source");
+        source.src = "/assets/music/song3.mp3"
+        music.appendChild(source);
+        music.play();
+        music.addEventListener('ended', function() {
+        music.pause();
+        source.remove();
+       });
+      } else if(avarageAges < 60){
+        const source = document.createElement("source");
+        source.src = "/assets/music/song5.mp3"
+        music.appendChild(source);
+        music.play();
+        music.addEventListener('ended', function() {
+        music.pause();
+        source.remove();
+       });
     }
+  }
   
     setTimeout(() => {
         showInfo("showTotal", `Total of Detections: ${totalDetections}`);
